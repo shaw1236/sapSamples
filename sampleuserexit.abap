@@ -1,16 +1,8 @@
-** GLOBE User Exit Lists
+** User Exit Lists
 **
 ** Purpose: user exit lists.
 **
-** Author:  Simon Li (The Globe and Mail)   Sep 2005
-** Initial Transport: XXXNNNNNNNN
-**======================================================================
-** Modification Log
-** Programmer  Date      Transport# Description
-** ----------- --------- ---------- ------------------------------------
-** XXXXXXXXXXX DDMMMYYYY XXXNNNNNNN Aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-**                                  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-**======================================================================
+** Author:  Simon Li  Sep 2005
 REPORT zgen_user_exit NO STANDARD PAGE HEADING LINE-SIZE 170 LINE-COUNT 66.
 
 *--------------------------------------------------------------------

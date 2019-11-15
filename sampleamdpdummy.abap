@@ -1,3 +1,9 @@
+** ABAP Managed Database Procedure and CDS Table Function 
+**
+** Purpose: Sample for how to use sqlscript
+**
+** Author : Simon Li  Sep 2018
+**
 CLASS zcl_amdp_dummy DEFINITION
   PUBLIC
   FINAL

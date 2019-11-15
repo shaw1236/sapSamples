@@ -1,3 +1,9 @@
+** Class read from/stored to a file persistence or clipboard 
+**
+** Purpose: Sample to exchange json <=> file, clipboard
+**
+** Author : Simon Li  Jul 2018
+**
 CLASS LCL_JSON_FILE DEFINITION.
   PUBLIC SECTION.
 

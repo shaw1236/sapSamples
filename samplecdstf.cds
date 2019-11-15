@@ -1,3 +1,9 @@
+// CDS Entity
+//
+// Purpose: Sample Address View
+//
+// Author : Simon Li  Jul 2019
+//
 @EndUserText.label: 'Get Ship-to Address'
 define table function ztf_get_shipto_addresses
 with parameters 

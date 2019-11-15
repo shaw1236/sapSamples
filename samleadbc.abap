@@ -1,3 +1,10 @@
+
+** ABAP Dagtabase Connectivity 
+**
+** Purpose: Sample for data access via ADBC
+**
+** Author : Simon Li  Jul 2018
+**
 REPORT zr_adbc_simple.
    TYPES:
      BEGIN OF ty_res,

@@ -2,16 +2,8 @@
 **
 ** Purpose: List the domain tables
 **
-** Author : Simon Li (The Globe and Mail)   Jul 2008
+** Author : Simon Li  Jul 2008
 **
-** Initial Transport: $TMP
-**
-**=========================================================================
-** Modification Log
-** Programmer  Date(M/D/Y)   Transport# Description
-** ----------- ------------- --------- ------------------------------------
-** Simon Li    07/03/2008    Local     Initial revision
-**=========================================================================
 REPORT  zgen_domain_table NO STANDARD PAGE HEADING LINE-SIZE 120.
 
 TYPE-POOLS: abap.

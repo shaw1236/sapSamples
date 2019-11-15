@@ -1,3 +1,9 @@
+** ABAP Report Event Sequence 
+**
+** Purpose: Sample to use different events
+**
+** Author : Simon Li  Jul 2010
+**
 REPORT ZTEST_EVENTS 
     LINE-SIZE 75 
     LINE-COUNT 30(3) 

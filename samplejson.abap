@@ -1,3 +1,9 @@
+** ABAP JSON Process 
+**
+** Purpose: Sample to read JSON stream and create json output
+**
+** Author : Simon Li  Jul 2015
+**
 report testjosn1.
 
 form test1 using value(request) type string 

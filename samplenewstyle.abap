@@ -1,3 +1,9 @@
+** ABAP New PRogram Style for Open SQL 
+**
+** Purpose: Sample to some new style coding
+**
+** Author : Simon Li  Nov 2018
+**
 report test_report no standard page heading line-size 120 message-id zme.
 
 tables jkap.

@@ -1,3 +1,9 @@
+** ABAP OO: interface, class, event, inheritance, encapsulation, etc  
+**
+** Purpose: Sample to create class, interface and use them
+**
+** Author : Simon Li  Jan 2019
+**
 * 1. Create two interfaces: if_display_area, if_display_szie
 *    define two apis: get_area() and get_size() respectively
 * 2. Integrate the two interfaces into a new interface if_display

@@ -1,10 +1,10 @@
-// Purpose: Connect to Hana and execute a query
+// Purpose: Connect to Hana and execute query
 // Author : Simon Li
 // Date   : Nov 11, 2019
 //
 // Usage : 
-// const hanaquery = require('hanaquery');
-// const hana = new hanaquery();
+// const myhdb = require('myhdb');
+// const hana = new myhdb();
 
 "use strict";
 

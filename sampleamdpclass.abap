@@ -1,3 +1,9 @@
+** ABAP Managed Database Procedure and CDS Table Function 
+**
+** Purpose: Sample to AMDP and CDS view
+**
+** Author : Simon Li  Jul 2018
+**
 CLASS zcl_test_amdp_helper DEFINITION
   PUBLIC
   FINAL
