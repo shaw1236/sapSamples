@@ -1,0 +1,8 @@
+    -- Hana Data Type
+    -- 1. Date Time: DATE, TIME, SECONDDATE(YYYYMMDDHHMMSS), TIMESTAMP
+    -- 2. Numeric: TINYINT, SMALLINGT, INTEGER, BIGINT, SMALLDECIMAL, DECIMAL, REAL, DOUBLE
+    -- 3. Boolean: Boolean(TRUE, FALSE)
+    -- 4. Character: VARCHAR, NVARCHAR, ALPHANUM, SHORTTEXT
+    -- 5. Binary: VARBINARY
+    -- 6. Large Objects: BLOB, CLOB, NCLOB, TEXT
+    -- 7. Multi-Value: ARRAY

@@ -1,0 +1,31 @@
+INITIALIZATON
+Triggered before displaying the selection screen.
+
+AT SELECTION-SCREEN OUTPUT.
+PBO 
+	
+AT SELECTION-SCREEN
+PAI
+Triggered after processing of the user input on the selection screen. 
+This event verifies the user input prior to the execution of a program. 
+After processing the user input, the selection screen remains in the active mode.
+	
+START-OF-SELECTION
+Triggered only after the processing of the selection screen is over; that is, when the user clicks the Execute icon on the selection screen.
+	
+END-OF-SELECTION
+Triggered after the last statement in the START-OF-SELECTON event is executed.
+	
+TOP-OF-PAGE
+Triggered by the first WRITE statement to display the data on a new page.
+
+END-OF-PAGE
+Triggered to display the text at the end of a page in a report. Note, that this event is 
+the last event while creating a report, and should be combined with the LINE-COUNT clause
+of the REPORT statement.
+
+report <reportname> LINE-SIZE 75 LINE-COUNT 30(3) 
+NO STANDARD PAGE HEADING MESSAGE-ID <message>. 
+
+methods <method> for event <event_name> of <published_class_name>
+set handler <listened_class>-method for all instances | instance
