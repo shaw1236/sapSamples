@@ -6,3 +6,9 @@
     -- 5. Binary: VARBINARY
     -- 6. Large Objects: BLOB, CLOB, NCLOB, TEXT
     -- 7. Multi-Value: ARRAY
+
+    CLIKE is compatible with the types C, N, DATE, TIME and STRING
+    CSEQUENCE is compatible with the types C and STRING 
+    XSEQUENCE is compatible with the types X and XSTRING. 
+    NUMERIC is compatible with the types I, P, and F. 
+    INT1 (single-byte integer) and INT2 (double-byte integer).

@@ -36,6 +36,28 @@ DATA gt_data TYPE TABLE OF dd03vt.
 
 *DATA ok_code TYPE sy-ucomm.
 
+* Events of cl_salv_events_table
+* if_salv_events_functions~before_salv_function
+*    IMPORTING e_salv_function.
+
+* if_salv_events_functions~before_salv_function
+*    IMPORTING e_salv_function.
+
+* if_salv_events_functions~added_function
+*    IMPORTING e_salv_function.
+
+* if_salv_events_list~top_of_page
+*    IMPORTING r_top_of_page page table_index.
+
+* if_salv_events_list~end_of_page
+*    IMPORTING r_end_of_page page.
+
+* if_salv_events_actions_table~double_click
+*    IMPORTING row column.
+
+* if_salv_events_actions_table~link_click
+*    IMPORTING row column.
+
 *----------------------------------------------------------------------*
 * CLASS lcl_handle_events DEFINITION
 *----------------------------------------------------------------------*
@@ -131,6 +153,11 @@ FORM alv_display.
 * All functions in GUI status
       data(lo_functions) = lo_salv_table->get_functions( ).
       lo_functions->set_all( abap_true ).
+*     ALV-Toolbar
+*      lo_salv_table->set_screen_status(
+*        report        = 'SAPLSLVC_FULLSCREEN'
+*        pfstatus      = 'STANDARD_FULLSCREEN'
+*        set_functions = lo_salv_table->c_functions_all ).
 
 **
 *      data(lo_display) = lo_salv_table->get_display_settings( ).
