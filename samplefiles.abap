@@ -8,7 +8,7 @@
 ** https://launchpad.support.sap.com/#/notes/933420/E
 **
 **  !!Code needs to be adjusted before using it!!! 
-REPORT ZTEST_FILES 
+REPORT ZTEST_FILES. 
 
 parameters p_file type char256 obligatory lower case.
 
