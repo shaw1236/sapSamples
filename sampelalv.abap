@@ -190,8 +190,6 @@ FORM alv_display.
 
     CATCH cx_root INTO data(lo_cx_root).                    "#EC CATCH_ALL
       data(lv_message) = lo_cx_root->get_text( ).
-      MESSAGE lv_+s
-      
-      message TYPE 'E'.
+      MESSAGE lv_message TYPE 'E'.
   ENDTRY.
 ENDFORM.                    "al_display
