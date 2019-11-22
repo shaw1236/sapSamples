@@ -1,4 +1,17 @@
-report zprint.
+** SAP Form Printing 
+**
+** Purpose: Sample to use SAPScript, Smartforms and Adobe form
+**
+** Author : Simon Li  Nov 2018
+**
+report ztest_print no standard page heading line-size 120 message-id zme.
+
+data gt_data type standard table of char2048.
+
+start-of-selection.
+* 1. Data retrieval - gt_data
+
+* 2. print sapscript, smartforms, Adobe form
 
 FORM print_smartform using value(i_form) TYPE formname 
                            it_data type ty_data.
@@ -194,6 +207,7 @@ ENDFORM.
 form print_adobeform using value(i_form) type formname
                            it_data type ty_data. 
 *https://wiki.scn.sap.com/wiki/display/ABAP/Adobe+Forms+from+Scratch
+* transaction 'SFP', which stands for SAP Forms Process.
 * Adobe form - interface and form
 *Master Pages
 * Every form design contains at least one master page that Live Cycle Designer creates automatically.
