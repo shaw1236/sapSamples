@@ -20,10 +20,34 @@ CLASS LCL_JSON_FILE DEFINITION.
       CLIPBOARD_TO_STRING IMPORTING 
                             VALUE(i_file) TYPE CSEQUENCE DEFAULT ''
                           RETURNING value(result) TYPE STRING.                
-                                 
+    
+    CLASS-METHDOS getCampSoapXml IMPORTIMG value(action) TYPE zaction
+                                           value(request) TYPE string
+                                 RETURNING value(soapXml) TYPE string.
 ENDCLASS. "LCL_JSON_FILE DEFINITION
 
 CLASS LCL_JSON_FILE IMPLEMENTATION.
+  METHOD getCampSoapXml.
+    constants(con_function) = 'ZCAMP_JSON_TRANSFER'.
+    " SOAP is an acronym for Simple Object Access Protocol
+    " SOAP is a communication protocol based on XML, communicate between applications via http
+    " A namespace can be defined by an xmlns attribute in the start tag of an element.
+    " A namespaces can also be declared in the XML root element:
+    soapXml = 
+            |<?xml version="1.0" encoding="UTF-8"?>| &&
+            |<env:Envelope xmlns:env="http://schemas.xmlsoap.org/soap/envelope/" | &&
+            |xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" | &&
+            |xmlns:xs="http://www.w3.org/2001/XMLSchema">| &&
+            |<env:Header/>| &&
+            |<env:Body>| &&
+            |<ws:{ con_function } xmlns:ws="urn:sap-com:document:sap:rfc:functions">| &&
+            |<ACTION>{ action }</ACTION>| &&
+            |<REQUEST>{ request }</REQUEST>| &&
+            |</ws:{ con_function }>| &&
+            |</env:Body>| &&
+            |</env:Envelope>|.
+  ENDMETHOD. 
+
   METHOD string_to_file.
     "DATA lv_xstring TYPE xstring.
     CALL FUNCTION 'SCMS_STRING_TO_XSTRING'
@@ -262,10 +286,13 @@ CLASS LCL_JSON_FILE IMPLEMENTATION.
     CONDENSE result.
 
     IF i_file IS NOT INITIAL.
-      CALL METHOD zcl_json_ws_util=>string_to_file
+      string_to_file(  
         EXPORTING
           i_long_string = result
-          i_file        = i_file.
+          i_file        = i_file
+      ).
     ENDIF.
-  ENDMETHOD.                    "
+  ENDMETHOD. "
 ENDCLASS.
+
+

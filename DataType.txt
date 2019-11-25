@@ -1,3 +1,10 @@
+    -- ABAP Basic Data Type
+    C, N, I, P, F, D, T, X, STRING, XSTRING
+
+    -- DDIC Data Type
+    CHAR, NUMC, INT1, INT2, INT4, FLTP, DEC, QUAN, CURR, TIMS, DATS, ACCP, SSTRING, STRING, 
+    XTRING, CLNT, CUKY, LANG, RAW, UNIT 
+
     -- Hana Data Type
     -- 1. Date Time: DATE, TIME, SECONDDATE(YYYYMMDDHHMMSS), TIMESTAMP
     -- 2. Numeric: TINYINT, SMALLINGT, INTEGER, BIGINT, SMALLDECIMAL, DECIMAL, REAL, DOUBLE
@@ -7,8 +14,10 @@
     -- 6. Large Objects: BLOB, CLOB, NCLOB, TEXT
     -- 7. Multi-Value: ARRAY
 
+    -- Generic ABAP Type
     CLIKE is compatible with the types C, N, DATE, TIME and STRING
     CSEQUENCE is compatible with the types C and STRING 
     XSEQUENCE is compatible with the types X and XSTRING. 
     NUMERIC is compatible with the types I, P, and F. 
     INT1 (single-byte integer) and INT2 (double-byte integer).
+

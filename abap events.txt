@@ -1,18 +1,30 @@
+Load-of-Program
+Triggered during the first time Load
+
 INITIALIZATON
 Triggered before displaying the selection screen.
 
 AT SELECTION-SCREEN OUTPUT.
-PBO 
+PBO, screen 
 	
 AT SELECTION-SCREEN
+At Selection-Screen on <field(mention the field name)>
+At Selection-Screen on block
 PAI
 Triggered after processing of the user input on the selection screen. 
 This event verifies the user input prior to the execution of a program. 
 After processing the user input, the selection screen remains in the active mode.
-	
+
+
 START-OF-SELECTION
 Triggered only after the processing of the selection screen is over; that is, when the user clicks the Execute icon on the selection screen.
 	
+FORM PUT_<node>
+The logical database reads the selected data of the node <node>.
+
+GET <node> [LATE].
+This event is triggered by the PUT statement in the above subroutine. This event block allows you to process the data
+
 END-OF-SELECTION
 Triggered after the last statement in the START-OF-SELECTON event is executed.
 	
@@ -24,8 +36,28 @@ Triggered to display the text at the end of a page in a report. Note, that this 
 the last event while creating a report, and should be combined with the LINE-COUNT clause
 of the REPORT statement.
 
+At Pf<nn>  (Obsolete)
+A user chooses a function code PF<nn> (<nn> can be between 01 and 24)
+should only be for temporary test versions. In production programs
+
+AT USER-COMMAND.
+<statements>.
+If a user chooses a function code during list processing that is neither processed by the system, or PICK or PF<nn>, 
+the system triggers the event AT USER-COMMAND. For this event, you must define your own GUI status for a list.
+
+At Line-Selection
+This event is processed whenever a user chooses a valid line in the list output
+hide, get cursor field
+
+Top-of-Page during line-selection
+A user clicks on some field in basic list then it navigates to another secondary list, top page of the 
+secondary list output
+
 report <reportname> LINE-SIZE 75 LINE-COUNT 30(3) 
 NO STANDARD PAGE HEADING MESSAGE-ID <message>. 
 
 methods <method> for event <event_name> of <published_class_name>
 set handler <listened_class>-method for all instances | instance
+
+Logic Database sequence
+https://help.sap.com/saphelp_46c/helpdata/en/9f/db9bb935c111d1829f0000e829fbfe/content.htm?no_cache=true

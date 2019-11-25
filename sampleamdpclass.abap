@@ -422,7 +422,7 @@ CLASS zcl_test_amdp_helper IMPLEMENTATION.
         where mandt = :p_client
           -- suspensioon/redirection, R alone, R+U, U exception
           and ( poart = 'R' or poart = 'U' and zzposnr_ur = '000000' )
-          and gueltigvon = :p_keydate  -- suspension/redirection starts
+          and gueltigv/on = :p_keydate  -- suspension/redirection starts
           and not exists ( select posnr from :lt_term_all  -- already terminated
                            where mandt = _jkap.mandt
                              and vbeln = _jkap.vbeln
@@ -547,9 +547,7 @@ CLASS zcl_test_amdp_helper IMPLEMENTATION.
              union 
              select * from :lt_change_set;
 
-    --return lt_all;    
-    return select * from :lt_all
-           order by vbeln, posex, posnr;          
+    return lt_all;              
   endmethod.
 
   method check_termination by Database procedure for hdb

@@ -41,7 +41,7 @@ CLASS zcl_amdp_dummy IMPLEMENTATION.
     
     declare int1 smallint := 0;
     declare int2 integer := 10;                -- integer
-    declare arrInt integer array;              -- array of integer
+    declare arrInt integer array := array(1, 2, 3); -- array of integer
     declare dec decimals := 10.2;              -- Decimals
     declare lv_current_date date := '00000000; -- date 
     declare lv_current_time time := '000000;   -- time 
@@ -55,13 +55,13 @@ CLASS zcl_amdp_dummy IMPLEMENTATION.
     dataset.carrid := 'LH';
     dataSet.connid := '0400';
     
-    select * into dataSet from sflight
+    select top 1 * into dataSet from sflight
        where carrid = :dataset.carrid  
          and connid = :dataset.connid;
 
     select current_date, curremt_time into lv_current_date, lv_current_time from dummy;
 
-    select partner, name1 into tab1 from but000
+    tab1 = select partner, name1 from but000
        where crdat = :lv_current_date;      
   endmethod.
 

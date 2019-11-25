@@ -24,10 +24,10 @@ REPORT ztest_adbc_simple.
 
    TRY.
      "1. create statement object
-     DATA(lo_stmt) = NEW cl_sql_statement( ).
+     DATA(lo_stmt) = NEW cl_sql_statement( ).  " CL_SQL_STATEMENT
 
      "2. execute the query
-     DATA(lo_res) = lo_stmt->execute_query( lv_stmt ).
+     DATA(lo_res) = lo_stmt->execute_query( lv_stmt ).  "CL_SQL_RESULT
      
      "3. set the output parameter
      lo_res->set_param_table( REF #( lt_result ) ).

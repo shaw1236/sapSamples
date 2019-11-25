@@ -23,13 +23,26 @@ INITIALIZATION.
 
 AT SELECTION-SCREEN OUTPUT.  " PBO
   loop at screen.
+    case screen-group.
+      when 'OUT'.  " Output only, no input/change
+        screen-input = '0'.
+        modify screen.
+        
+      when 'PAS'.  " Password, no display
+        screen-invisible = '1'.
+        modify screen.
+
+      when 'TST'.   " switch it off for production
+        screen-active = '0'.
+        modify screen.
+    endcase.
   endloop.
 
 AT SELECTION-SCREEN.         " PAI
   IF MATS-LOW = ' '. 
-    MESSAGE I000(ZKMESSAGE). 
+    MESSAGE I286(00) WITH 'The low value is required'. 
   ELSEIF MATS-HIGH = ' '. 
-    MESSAGE I001(ZKMESSAGE). 
+    MESSAGE I286(00) WITH 'The high value is requitred'. 
   ENDIF. 
 
 AT SELECTION-SCREEN ON VALUE-REQUEST FOR mats-low.

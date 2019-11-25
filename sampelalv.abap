@@ -40,7 +40,7 @@ DATA gt_data TYPE TABLE OF dd03vt.
 * if_salv_events_functions~before_salv_function
 *    IMPORTING e_salv_function.
 
-* if_salv_events_functions~before_salv_function
+* if_salv_events_functions~after_salv_function
 *    IMPORTING e_salv_function.
 
 * if_salv_events_functions~added_function
@@ -94,8 +94,7 @@ CLASS lcl_handle_events IMPLEMENTATION.
        object_not_specified       = 2
        permission_failure         = 3
        type_not_valid             = 4
-       OTHERS                     = 5
-             .
+       OTHERS                     = 5.
     IF sy-subrc <> 0.
       MESSAGE ID sy-msgid TYPE sy-msgty NUMBER sy-msgno
               WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4.
@@ -121,6 +120,7 @@ START-OF-SELECTION.
 
   PERFORM selection.
   PERFORM alv_display.
+  
 *&---------------------------------------------------------------------*
 *&      Form  selection
 *&---------------------------------------------------------------------*
