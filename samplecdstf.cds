@@ -52,3 +52,21 @@ returns {
        VALID_TO: wdat2;
 }
 implemented by method sampleamdpclass=>get_order_shipto_addresses;
+
+@EndUserText.label: 'Get Order Status'
+define table function ztf_order_status_data
+with parameters 
+@Environment.systemField: #CLIENT
+  p_client: abap.clnt,
+@Environment.systemField: #SYSTEM_DATE
+  p_keydate: abap.date
+returns {
+    key mandt: mandt;
+    key vbeln: avnr;          -- Order
+    key posex: posex_isp;     -- ItemEx
+        posnr_ur: apnr_ur;    -- Original item 1:1 -> ItemEx
+        posnr: apnr;          -- ItemInt for linkage
+        status: abap.char(1); -- Status
+        delta: abap.char(1);  -- delta change flag
+}
+implemented by method sampleamdpclass=>get_order_status_data;

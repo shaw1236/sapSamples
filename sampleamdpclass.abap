@@ -20,14 +20,55 @@ CLASS zcl_test_amdp_helper DEFINITION
          end of ty_termination,
          ty_ytermination_tab type standard table of ty_termination. " with non-unique key mandt vbeln posex.
 
+  type:  begin of ty_order_status,
+           mandt    TYPE s_mandt,
+           vbeln    TYPE avnr,       "Order
+           posex    TYPE posex_isp,  "ItemEx
+           posnr_ur TYPE apnr_ur,    "Original item 1:1 -> ItemEx
+           posnr    TYPE apnr,       "ItemInt for linkage
+           status   TYPE char1,      "Status
+           delta    TYPE char1,      "delta change flag
+         end of ty_order_status,
+         ty_order_status_tab TYPE standard table of ty_order_status.
+
   INTERFACES if_amdp_marker_hdb. " introduce AMDP for Hana 
 
-  class-methods: get_order_status_data for table function ztf_order_status_data,
-                 get_payment_document  for table function ztf_payment_document.
+  class-methods: get_payment_document  for table function ztf_payment_document,
+                 get_order_status_data for table function ztf_order_status_data.
+                 
+  " Test function table "ztf_order_status_data"
+  "   1. se16n
+  "   2. pass the parameters
+  "      select * from ztf_order_status_data(p_client = @sy-mandt, p_keydate = @sy-datum)
+  "        into @data(lt_order_status). 
+  "   3. just direct openSQL call as p_client and p_keydate have been defaulted
+  "      select * from ztf_order_status_data
+  "        into @data(lt_order_status).
+  "   for 2 & 3:
+  "    loop at lt_order_status assigning field-symbols(<order_status>).
+  "      write: / <order_status>-vblen, <order_status>-posex, <order_status>-status.
+  "    endloop.
+  class-methods: get_order_status_proc
+      importing value(p_client)        type s_mandt
+                value(p_keydate)       type sydatum
+                value(p_inc_delta)     type abap_bool default abap_true
+      exporting value(et_order_status) type ty_order_status_tab.
+  " Test procedure "get_order_status_proc"
+  "    try.
+  "      zcl_test_amdp_helper=>get_order_status_proc( exporting
+  "                                                     p_client  = sy-mandt
+  "                                                     p_keydate = sy-datum
+  "                                                   importing 
+  "                                                     et_order_status = data(lt_order_status)
+  "                                                 ).
+  "    " RAISING CX_AMDP_ERROR
+  "      catch cx_amdp_error into data(lo_amdp_error).
+  "        data(lv_text) = lo_amdp_error->get_text().
+  "    endtry.
 
   class-methods get_termination_per_keydate
       importing value(i_client)     type s_mandt
-                value(i_keydate)    type sydatrum
+                value(i_keydate)    type sydatum
                 value(i_offset)     type int4 default 1825   " 365 * 5 days 
       exporting value(et_term_data) type ty_termination_tab.
 
@@ -125,14 +166,15 @@ CLASS zcl_test_amdp_helper IMPLEMENTATION.
                        )                             
       group by _term.mandt, _term.vbeln, _jkap.posex, _jkap.posnr_ur, liefendei;
 
-    lt_term_data = 
+    et_term_data = 
       select * from :lt_term_r
       union
       select * from :lt_term_tmp;
-      
-    select * into et_term_data        
-      from :lt_term_data
       order by mandt, vbeln, posex; 
+
+    --select * into et_term_data        
+    --  from :lt_term_data
+    --  order by mandt, vbeln, posex; 
   endmethod.
 
   method get_payment_document by database function 
@@ -207,7 +249,7 @@ CLASS zcl_test_amdp_helper IMPLEMENTATION.
 
        return
              select * from :lt_dataset1
-             union
+             union all
              select * from :lt_dataset2;
     endmethod.
 
@@ -360,8 +402,7 @@ CLASS zcl_test_amdp_helper IMPLEMENTATION.
   method get_order_status_data by database function for hdb
                                language sqlscript
                                options read-only
-                               using jkvap jkak jkap
-                               zcl_test_amdp_helper=>get_termination_per_keydate.
+                               using zcl_test_amdp_helper=>get_order_status_proc.
     -- mandt: mandt;
     -- vbeln: avnr;          -- Order
     -- posex: posex_isp;     -- ItemEx
@@ -380,6 +421,21 @@ CLASS zcl_test_amdp_helper IMPLEMENTATION.
     -- Vacation Stop
     -- Suspension: R alone, R + U, U (vacation stop exempted)
     -- termination: R(reason: T01) + T, T (vacation stop exempted)
+    call
+     "ZCL_TEST_AMDP_HELPER=>GET_ORDER_STATUS_PROC"(
+            p_client        => :p_client,
+            p_keydaye       => :p_keydate,
+            et_order_status => :lt_order_status );
+
+    return :lt_order_status;
+  endmethod.
+  
+  method get_order_status_proc by database procedure 
+                               for hdb
+                               language sqlscript
+                               options read-only
+                               using jkvap jkak jkap
+                                     ZCL_TEST_AMDP_HELPER=>GET_TERMINATION_PER_KEYDATE.
 
     ----------------------------------------------------------------
     -- Termination --
@@ -505,20 +561,21 @@ CLASS zcl_test_amdp_helper IMPLEMENTATION.
     ----------------------------------------------------------------
     lt_action_set = 
         select * from :lt_term_set  -- terminated
-        union
+        union all
         select * from :lt_susp_set  -- suspended
-        union
+        union all
         select * from :lt_start_set -- new start or restart
-        union
+        union all
         select * from :lt_end_set   -- naturally ended
 
     ----------------------------------------------------------------
     -- Item change --
     ----------------------------------------------------------------
-    lt_change_set =
+    if p_inc_delta = 'X' then
+      lt_change_set =
         select _jkap.mandt,
                _jkap.vbeln,
-               posex,
+                 posex,
                posnr_ur,
                _jkap.posnr,
                case
@@ -541,13 +598,14 @@ CLASS zcl_test_amdp_helper IMPLEMENTATION.
           and not exists( select vbeln from :lt_action_set ) -- not caught previously
           and (_jkap.erfdate = :p_keydate or
                _jkap.aendate = :p_keydate);
-
     ----------------------------------------------------------------
-    lt_all = select * from :lt_action_set
-             union 
-             select * from :lt_change_set;
-
-    return lt_all;              
+      et_order_status = select * from :lt_action_set
+                        union all
+                        select * from :lt_change_set;
+                        end if;
+    else
+      et_order_status = :lt_action_set; 
+    end if;                                 
   endmethod.
 
   method check_termination by Database procedure for hdb
