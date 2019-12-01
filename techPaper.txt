@@ -1,0 +1,65 @@
+-- How can external systems be integrated into SAP and which interfaces does the ERP system offer?
+RFC, BAPI, IDoc, SOAP, REST
+
+RFC – Remote Function Call
+The classic way for communication between non-SAP systems and SAP is, according to SAP itself, the RFC interface. 
+RFC interfaces are also often used to communicate between SAP systems itself. Put simply, RFC is a remote function
+call. The RFC interfaces for integration have been available since SAP/R3 until today.  With RFC, there is an RFC 
+client and an RFC server, whereby the client calls a function on the server. The function is executed on the remote 
+system.  In an RFC coupling, both systems can act as server and client.  The call of an RFC function is synchronous, 
+so that it is especially suitable for processes in which decisions or data are directly required for production. 
+
+BAPI – Business Application Programming Interface
+The basic concept of BAPIs is object-orientation. BAPIs make the business objects available in the SAP system for 
+access by external systems. Business objects represent real objects such as orders, customers or articles. The instances 
+are accessed exclusively using methods provided by the business object. Technically the method is called on the basis 
+of the RFC interfaces. The instance to which the calls are made is determined by key fields (customer number, and so on).
+Business Object Repository(BOR) and Remote Function call
+
+The IDoc (Intermediate Document) is an SAP file format. It is intended for transfer of transaction data. The structure 
+of an IDoc is prescribed by the IDoc type and defines the exact length and position of fields in the file. The IDoc 
+is divided into a header line, any number of data segments and status records. In contrast to the RFC interfaces, 
+communication via IDocs is always asynchronous. The sender creates an IDoc with data according to the specification 
+of the IDoc type and transfers it to the target system. The receiving system accepts the IDoc and inserts it into 
+the processing buffer for IDocs, from which the documents are processed successively. IDocs are a very old and proven 
+method of communication and are especially suitable for transferring master data and posting records. 
+
+SOAP web services are one of the newer technologies for connecting SAP. Since version 7.0 and the introduction of SAP 
+NetWeaver, Web services have been standard for interfaces.  SOAP is a pure web technology and functions are called 
+using the HTTP protocol. RFC Functions are also made available via the SOAP interface. The client receives detailed 
+information about the functions and their parameters via the WSDL file (Web Service Description Language). The WDSL 
+file can be retrieved via a defined URL.  Web services are created in SAP using WebDynpro and connected to ABAP 
+programs and RFC interfaces. RFC functions can also be published as Web services using other solutions (such as SAP MII). 
+
+REST API
+For some years now, the SAP Gateway has had the functionality to provide ABAP functions and RFC interfaces in the form
+of a REST API. REST has some advantages over SOAP, but is similar in technology, since it is also a function call via 
+HTTP protocol. Compared to SOAP, REST is easy to call from various platforms, transfers pure human-readable data in 
+JSON or XML and is faster and saves resources. In the basic idea of REST, an object is accessed via REST, not its methods. 
+The state of the object can be changed by the REST access. The change is caused by the passed parameters. A frequent 
+application is the connection of the SAP PI via the REST interface.
+CRUD: Create(POST), Read(GET), Update(PUT, PATCH), Delete(DELETE)
+
+OData (Open Data Protocol) is an ISO/IEC approved, OASIS standard that defines a set of best practices for building and 
+consuming RESTful APIs. OData helps you focus on your business logic while building RESTful APIs without having to worry
+about the various approaches to define request and response headers, status codes, HTTP methods, URL conventions, 
+media types, payload formats, query options, etc. OData also provides guidance for tracking changes, defining 
+functions/actions for reusable procedures, and sending asynchronous/batch requests.
+OData RESTful APIs are easy to consume. The OData metadata, a machine-readable description of the data model of the APIs, 
+enables the creation of powerful generic client proxies and tools.
+
+What is REST?
+REST is acronym for REpresentational State Transfer. It is architectural style for distributed hypermedia systems.
+REST also does have it’s own 6 guiding constraints which must be satisfied if an interface needs to be referred as RESTful. 
+These principles are listed below.
+1. Client–server
+2. Stateless - Each request from client to server must contain all of the information necessary to understand the request.
+3. Cacheable – Cache, non-cacheable
+4. Uniform interface
+5. Layered system - an architecture to be composed of hierarchical layers
+6. Code on demand (optional) 
+Resource - Any information that can be named can be a resource
+Resource Methods - uniform interface
+In simplest words, in the REST architectural style, data and functionality are considered resources and are accessed using 
+Uniform Resource Identifiers (URIs). The resources are acted upon by using a set of simple, well-defined operations. 
+The clients and servers exchange representations of resources by using a standardized interface and protocol – typically HTTP.

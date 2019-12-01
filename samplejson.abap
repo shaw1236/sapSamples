@@ -4,6 +4,11 @@
 **
 ** Author : Simon Li  Jul 2015
 **
+** TCodes:
+* SICF - HTTP Service Hierarchy Maintenance
+* SOAMANAGER - consume/expose webservices from ABAP engine
+* SOAP - Simple Object Access Protocol
+* WSDL file (Web Service Description Language)
 report testjosn1.
 
 form test1 using value(request) type string 
