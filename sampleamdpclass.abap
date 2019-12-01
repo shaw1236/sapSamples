@@ -127,6 +127,9 @@ CLASS zcl_test_amdp_helper IMPLEMENTATION.
     declare lv_start_date date := '00000000';
     lv_start_date := i_keydate - i_offset;
 
+    -- BEZUGGRD  - Purchase Reason
+    -- UNTBRGRD  - Reason for Suspension 
+    -- KUENDGRD  - Reason for end of delivery
     lt_term_r = 
       select mandt,
              vbeln,
@@ -137,7 +140,7 @@ CLASS zcl_test_amdp_helper IMPLEMENTATION.
       from jkap
       where mandt      = :i_client
         and poart      = 'R'
-        and kuendgrd   = 'T01'
+        and kunedgrd   = 'T01'   " Reason for end of delivery 
         and gueltigvon between :lv_start_date and :i_keydate;
 
     lt_term_tmp =  
