@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<edmx:Edmx Version="1.0" xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx">
+	<edmx:DataServices m:DataServiceVersion="2.0" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata">
+		<Schema Namespace="SalesModel" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices"
+                                       xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" 
+                                       xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
+			<EntityType Name="SalesOrder">
+				<Key>
+					<PropertyRef Name="SalesOrderKey"/>
+				</Key>
+				<Property MaxLength="10" Name="SalesOrderID" Type="Edm.String"/>
+				<Property MaxLength="40" Name="CreatedByEmployeeLastName" Type="Edm.String"/>
+				<Property MaxLength="1" Name="Status" Type="Edm.String"/>
+				<Property MaxLength="40" Name="ChangedByEmployeeLastName" Type="Edm.String"/>
+				<Property MaxLength="12" Name="ChangedByEmployeeUserID" Type="Edm.String"/>
+				<Property Name="NetSum" Precision="15" Scale="2" Type="Edm.Decimal"/>
+				<Property MaxLength="32" Name="CustomerKey" Type="Edm.String"/>
+				<Property MaxLength="12" Name="CreatedByEmployeeUserID" Type="Edm.String"/>
+				<Property MaxLength="1" Name="DeliveryStatus" Type="Edm.String"/>
+				<Property MaxLength="255" Name="CurrencyCodeDescription" Type="Edm.String"/>
+				<Property MaxLength="60" Name="StatusDescription" Type="Edm.String"/>
+				<Property MaxLength="80" Name="ChangedByCustomerName" Type="Edm.String"/>
+				<Property MaxLength="40" Name="CreatedByEmployeeFirstName" Type="Edm.String"/>
+				<Property MaxLength="60" Name="DeliveryStatusDescription" Type="Edm.String"/>
+				<Property MaxLength="255" Name="Note" Type="Edm.String"/>
+				<Property Name="CreatedAt" Precision="7" Type="Edm.DateTime"/>
+				<Property Name="Tax" Precision="15" Scale="2" Type="Edm.Decimal"/>
+				<Property Name="TotalSum" Precision="15" Scale="2" Type="Edm.Decimal"/>
+				<Property MaxLength="80" Name="CreatedByCustomerName" Type="Edm.String"/>
+				<Property MaxLength="40" Name="ChangedByEmployeeFirstName" Type="Edm.String"/>
+				<Property Name="ChangedAt" Precision="7" Type="Edm.DateTime"/>
+				<Property MaxLength="10" Name="CustomerID" Type="Edm.String"/>
+				<Property MaxLength="80" Name="CustomerName" Type="Edm.String"/>
+				<Property MaxLength="32" Name="SalesOrderKey" Nullable="false" Type="Edm.String"/>
+				<Property MaxLength="1" Name="BillingStatus" Type="Edm.String"/>
+				<Property MaxLength="60" Name="BillingStatusDescription" Type="Edm.String"/>
+				<Property MaxLength="5" Name="Currency" Type="Edm.String"/>
+				<NavigationProperty FromRole="SalesOrder" Name="BusinessPartner" Relationship="SalesModel.FK_SalesOrder_BusinessPartner" ToRole="BusinessPartner"/>
+			</EntityType>
+			<EntityType Name="BusinessPartner">
+				<Key>
+					<PropertyRef Name="BusinessPartnerKey"/>
+				</Key>
+				<Property Name="Address" Nullable="false" Type="Edm.String"/>
+				<Property MaxLength="10" Name="BusinessPartnerID" Type="Edm.String"/>
+				<Property MaxLength="80" Name="Company" Type="Edm.String"/>
+				<Property MaxLength="60" Name="BusinessPartnerRoleText" Type="Edm.String"/>
+				<Property MaxLength="32" Name="BusinessPartnerKey" Nullable="false" Type="Edm.String"/>
+				<Property MaxLength="60" Name="CurrencyText" Type="Edm.String"/>
+				<Property MaxLength="60" Name="WebAddress" Type="Edm.String"/>
+				<Property MaxLength="3" Name="BusinessPartnerRoleCode" Type="Edm.String"/>
+				<Property MaxLength="30" Name="FaxNumber" Type="Edm.String"/>
+				<Property MaxLength="10" Name="LegalForm" Type="Edm.String"/>
+				<Property MaxLength="255" Name="EmailAddress" Type="Edm.String"/>
+				<Property MaxLength="30" Name="TelephoneNumber" Type="Edm.String"/>
+				<Property MaxLength="5" Name="CurrencyCode" Type="Edm.String"/>
+				<Property MaxLength="3" Name="CountryCode" Type="Edm.String"/>
+				<Property MaxLength="1" Name="GenderCode" Type="Edm.String"/>
+			</EntityType>
+			<Association Name="FK_SalesOrder_BusinessPartner">
+				<End Multiplicity="0..1" Role="BusinessPartner" Type="SalesModel.BusinessPartner"/>
+				<End Multiplicity="*" Role="SalesOrder" Type="SalesModel.SalesOrder"/>
+				<ReferentialConstraint>
+					<Principal Role="BusinessPartner">
+						<PropertyRef Name="BusinessPartnerKey"/>
+					</Principal>
+					<Dependent Role="SalesOrder">
+						<PropertyRef Name="SalesOrderID"/>
+					</Dependent>
+				</ReferentialConstraint>
+			</Association>
+			<EntityContainer Name="SalesEntities" m:IsDefaultEntityContainer="true" xmlns:p7="http://schemas.microsoft.com/ado/2009/02/edm/annotation">
+				<EntitySet EntityType="SalesModel.SalesOrder" Name="SalesOrders"/>
+				<EntitySet EntityType="SalesModel.BusinessPartner" Name="BusinessPartners"/>
+				<AssociationSet Association="SalesModel.FK_SalesOrder_BusinessPartner" Name="SO_TO_BP_AssocSet">
+					<End EntitySet="BusinessPartners" Role="BusinessPartner"/>
+					<End EntitySet="SalesOrders" Role="SalesOrder"/>
+				</AssociationSet>
+			</EntityContainer>
+		</Schema>
+	</edmx:DataServices>
+</edmx:Edmx>
