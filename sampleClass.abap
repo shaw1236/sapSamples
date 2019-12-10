@@ -26,7 +26,8 @@ interface if_display.
    interfaces: if_display_area, if_display_size.
 endinterface.
 
-class rectanlge definition.
+class test_rectangle definition deferred.
+class rectangle definition friends test_rectangle.
   public section.  " access to any 
     " Events
     class-events increased.
@@ -91,7 +92,7 @@ class square implementaion.
     call method super->constructor( length = side width = side ). 
   endmethod.
   method get_side. side = length. endmethod.
-  method set_side. length = side. endmethod.
+  method set_side. length = width = side. endmethod.
   method iif_display_area~get_area.
     "result = super->if_display_area~get_area( ).
     result = length * length.
@@ -99,6 +100,41 @@ class square implementaion.
   method iif_display_size~get_size.
     result = length * 4.
   endmethod.
+endclass.
+
+* https://help.sap.com/doc/abapdocu_751_index_htm/7.51/de-DE/index.htm?file=abapclass_for_testing.htm
+* CLASS class DEFINITION FOR TESTING [RISK LEVEL {CRITICAL|DANGEROUS|HARMLESS}]
+*                                    [DURATION   {SHORT|MEDIUM|LONG}].
+class test_rectangle definition final for testing 
+  duration medium 
+  risk level dangerous.
+  public section.
+    methods checking.
+endclass.
+
+class test_rectangle implementation.
+  method checking.
+    DATA(lo_rect) = new rectangle( length = 10 witdth = 20 ).
+
+    cl_abap_unit_assert=>assert_equals(lo_rect->length, 10).
+    cl_abap_unit_assert=>assert_equals(lo_rect->width, 20).
+    cl_abap_unit_assert=>assert_equals(lo_rect->disp_area( ), 200).
+    cl_abap_unit_assert=>assert_equals(lo_rect->iif_display_size~get_size( ), 60).
+    cl_abap_unit_assert=>assert_equals(rectangle=>number_of_instance, 1).
+
+    data lo_rect2 type ref to rectangle. 
+    lo_rect2 = new square( 5 ).
+    data lo_square1 type ref to square.
+    try.
+      lo_square1 ?= lo_rect2. " Widening cast
+      cl_abap_unit_assert=>assert_bound(lo_rect2).
+      cl_abap_unit_assert=>assert_bound(lo_square1).
+      cl_abap_unit_assert=>assert_equals(lo_square1->lenth, 5).
+      cl_abap_unit_assert=>assert_equals(rectangle=>number_of_instance, 2).
+      CATCH cx_sy_move_cast_error.
+        cl_abap_unit_assert=>abort( quit = | cast error | ).
+    endtry.
+  endmethod.  
 endclass.
 
 class collector definition.
@@ -130,12 +166,13 @@ form test.
         
     DATA: lo_rec1 TYPE REF TO rectangle,
           lo_rec2 TYPE REF TO rectangle,
-          lif_rec  TYPE REF TO display.
+          lif_rec  TYPE REF TO if_display.
 
     DATA: lo_square1 TYPE REF TO square,
           lo_square2 TYPE REF TO square.
 
     "lo_rec1 = new rectange( length = 12 width = 2 ). " collector handler called
+    "lo_rec1 = NEW #( length = 12 width = 2 ).
     create object lo_rec1 exporting 
                              length = 12
                              width = 2.
