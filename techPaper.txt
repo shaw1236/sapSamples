@@ -70,7 +70,7 @@ http://www.saplearners.com/model-your-first-odata-service/
 SEGW - Gateway Service Builder
 /IWFND/*, /IWBEP/*
 /IWFND/MAINT_SERVICE - ACTIVATE AND MAINTAIN SERVICES
-IWFND/GATEWAY_CLIENT - Getway Client
+/IWFND/GATEWAY_CLIENT - Getway Client
 /sap/opu/odata/sap/ZCREATE_CRUD_OPERATION_SRV/$metadata
 
 Entity Sets

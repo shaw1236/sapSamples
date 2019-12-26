@@ -10,11 +10,35 @@ REPORT ZTEST_EVENTS
     NO STANDARD PAGE HEADING
     MESSAGE-ID ZWWW. 
 
-Tables: MARA. 
-		
-SELECT-OPTIONS: MATS FOR MARA-MATNR OBLIGATORY. 
+TYPE-POOLS icon.
 
-INITIALIZATION. 
+Tables MARA. 
+TABLES: sscrfields, smp_dyntxt.
+  
+SELECTION-SCREEN BEGIN OF BLOCK b1 WITH FRAME TITLE text-001.
+SELECT-OPTIONS MATS FOR MARA-MATNR OBLIGATORY. 
+SELECTION-SCREEN END OF BLOCK b1.
+
+SELECTION-SCREEN FUNCTION KEY: 1, 2.  
+" The numbering i must be between 1 and 5
+
+*At Pf<nn>  (Obsolete)
+*A user chooses a function code PF<nn> (<nn> can be between 01 and 24)
+*should only be for temporary test versions. In production programs
+
+AT USER-COMMAND.
+*<statements>.
+*If a user chooses a function code during list processing that is neither processed by the system, or PICK or PF<nn>, 
+*the system triggers the event AT USER-COMMAND. For this event, you must define your own GUI status for a list.
+
+INITIALIZATION.
+  smp_dyntxt-text = 'LH'.
+  smp_dyntxt-icon_id = icon_plane.
+  sscrfields-functxt_01 = smp_dyntxt.
+
+  smp_dyntxt-text = 'UA's.
+  sscrfields-functxt_02 = smp_dyntxt.
+
   MATS-SELECTION = 'I'.
   MATS-OPTION = 'EQ'.
   MATS-LOW = '1'. 
@@ -39,6 +63,22 @@ AT SELECTION-SCREEN OUTPUT.  " PBO
   endloop.
 
 AT SELECTION-SCREEN.         " PAI
+  CASE sscrfields-UCOMM.
+    WHEN 'FC01'.
+      " Write your logic for the first push button
+      exit.
+    
+    WHEN 'FC02'.
+     " Write your logic for the second push button
+     exit.
+  ENDCASE
+
+  AUTHORITY-CHECK OBJECT 'Z_MATS'
+    ID 'MAT' FIELD mats-low ID 'ACTVT' FIELD '03'.
+  IF sy-subrc <> 0.
+    MESSAGE 'No authorization' TYPE 'E' DISPLAY LIKE 'S'.
+  ENDIF.
+
   IF MATS-LOW = ' '. 
     MESSAGE I286(00) WITH 'The low value is required'. 
   ELSEIF MATS-HIGH = ' '. 

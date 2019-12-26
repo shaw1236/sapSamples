@@ -724,39 +724,62 @@ ENDFORM.                    " f4_help_comp
 *----------------------------------------------------------------------*
 FORM bdc_cmod_project USING cmod TYPE ty_cmod.
 
-  DATA: bdctab TYPE TABLE OF bdcdata,
-        bdc_wa TYPE bdcdata.
+*  DATA: bdctab TYPE TABLE OF bdcdata,
+*        bdc_wa TYPE bdcdata.
+*
+** BDC Program
+*  CLEAR bdc_wa.
+*  bdc_wa-program = 'SAPMSMOD'.
+*  bdc_wa-dynpro = '1010'.
+*  bdc_wa-dynbegin = 'X'.
+*  APPEND bdc_wa TO bdctab.
+*
+** BDC cursor
+*  CLEAR bdc_wa.
+*  bdc_wa-fnam = 'BDC_CURSOR'.
+*  bdc_wa-fval = 'MOD0-NAME'.
+*  APPEND bdc_wa TO bdctab.
+*
+** Cursor value
+*  CLEAR bdc_wa.
+*  bdc_wa-fnam = 'MOD0-NAME'.
+*  bdc_wa-fval = cmod-project_name.
+*  APPEND bdc_wa TO bdctab.
+*
+** BDC OKCODE
+*  CLEAR bdc_wa.
+*  bdc_wa-fnam = 'BDC_OKCODE'.
+*  bdc_wa-fval = '=SHOW'.
+*  APPEND bdc_wa TO bdctab.
 
-* BDC Program
-  CLEAR bdc_wa.
-  bdc_wa-program = 'SAPMSMOD'.
-  bdc_wa-dynpro = '1010'.
-  bdc_wa-dynbegin = 'X'.
-  APPEND bdc_wa TO bdctab.
-
-* BDC cursor
-  CLEAR bdc_wa.
-  bdc_wa-fnam = 'BDC_CURSOR'.
-  bdc_wa-fval = 'MOD0-NAME'.
-  APPEND bdc_wa TO bdctab.
-
-* Cursor value
-  CLEAR bdc_wa.
-  bdc_wa-fnam = 'MOD0-NAME'.
-  bdc_wa-fval = cmod-project_name.
-  APPEND bdc_wa TO bdctab.
-
-* BDC OKCODE
-  CLEAR bdc_wa.
-  bdc_wa-fnam = 'BDC_OKCODE'.
-  bdc_wa-fval = '=SHOW'.
-  APPEND bdc_wa TO bdctab.
+  DATA(bdctab) = VALUE BDCDATA(
+    " BDC Program/dynpro
+    ( program = 'SAPMSMOD' dynpro = '1010' dynbegin = 'X' )
+    " BDC OKCODE
+    ( fnam = 'BDC_OKCODE' fval = '=SHOW' )
+    " BDC cursor
+    ( fnam = 'BDC_CURSOR' fval = 'MOD0-NAME' )
+    " Field/value
+    ( fnam = 'MOD0-NAME' fval = cmod-project_name )
+  ).
 
 *'A' Display screen
 *'E' Display only if an error occurs
 *'N' Do not display
 *'P' Do not display; debugging possible
-  CALL TRANSACTION 'CMOD' USING bdctab MODE 'E'.
+  data(lv_mode) = 'E'.
+
+* A - Asynchronous update
+* S - Synchronous processing 
+* L Local update
+  data(lv_upd) = 'S'.
+  CALL TRANSACTION 'CMOD' USING bdctab MODE lv_mode
+                          UPDATE lv_upd
+                          MESSAGES INTO DATA(lt_message).
+  " BDCMSGCOLL
+  LOOP AT lt_message assigning field-symbols(<message>) where msgtyp = 'E'.
+    WRITE: / <message>-MSGID, <message>-msgnr, <message>-MSGV1. 
+  ENDLOOP.
 ENDFORM.                    " BDC_cmod_project
 *&---------------------------------------------------------------------*
 *&      Form  bdc_cmod_exit
