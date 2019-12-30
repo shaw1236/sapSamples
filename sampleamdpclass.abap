@@ -10,7 +10,7 @@ CLASS zcl_test_amdp_helper DEFINITION
   CREATE PUBLIC .
 
   PUBLIC SECTION.
-  types: begin of ty_termination,
+    types: begin of ty_termination,
            mandt      type jkap-mandt,
            vbeln      type jkap-vbeln,
            posex      type jkap-posex,
@@ -20,7 +20,7 @@ CLASS zcl_test_amdp_helper DEFINITION
          end of ty_termination,
          ty_ytermination_tab type standard table of ty_termination. " with non-unique key mandt vbeln posex.
 
-  type:  begin of ty_order_status,
+    types:  begin of ty_order_status,
            mandt    TYPE s_mandt,
            vbeln    TYPE avnr,       "Order
            posex    TYPE posex_isp,  "ItemEx
@@ -31,10 +31,10 @@ CLASS zcl_test_amdp_helper DEFINITION
          end of ty_order_status,
          ty_order_status_tab TYPE standard table of ty_order_status.
 
-  INTERFACES if_amdp_marker_hdb. " introduce AMDP for Hana 
+    INTERFACES if_amdp_marker_hdb. " introduce AMDP for Hana 
 
-  class-methods: get_payment_document  for table function ztf_payment_document,
-                 get_order_status_data for table function ztf_order_status_data.
+    class-methods: get_payment_document  for table function ztf_payment_document,
+                   get_order_status_data for table function ztf_order_status_data.
                  
   " Test function table "ztf_order_status_data"
   "   1. se16n
@@ -48,11 +48,11 @@ CLASS zcl_test_amdp_helper DEFINITION
   "    loop at lt_order_status assigning field-symbols(<order_status>).
   "      write: / <order_status>-vblen, <order_status>-posex, <order_status>-status.
   "    endloop.
-  class-methods: get_order_status_proc
-      importing value(p_client)        type s_mandt
-                value(p_keydate)       type sydatum
-                value(p_inc_delta)     type abap_bool default abap_true
-      exporting value(et_order_status) type ty_order_status_tab.
+    class-methods: get_order_status_proc
+                      importing value(p_client)        type s_mandt
+                                value(p_keydate)       type sydatum
+                                value(p_inc_delta)     type abap_bool default abap_true
+                      exporting value(et_order_status) type ty_order_status_tab.
   " Test procedure "get_order_status_proc"
   "    try.
   "      zcl_test_amdp_helper=>get_order_status_proc( exporting
@@ -66,53 +66,53 @@ CLASS zcl_test_amdp_helper DEFINITION
   "        data(lv_text) = lo_amdp_error->get_text().
   "    endtry.
 
-  class-methods get_termination_per_keydate
-      importing value(i_client)     type s_mandt
-                value(i_keydate)    type sydatum
-                value(i_offset)     type int4 default 1825   " 365 * 5 days 
-      exporting value(et_term_data) type ty_termination_tab.
+    class-methods get_termination_per_keydate
+                    importing value(i_client)     type s_mandt
+                              value(i_keydate)    type sydatum
+                              value(i_offset)     type int4 default 1825   " 365 * 5 days 
+                    exporting value(et_term_data) type ty_termination_tab.
 
-  class-methods get_payment_document_single
-      importing value(i_client) type s_mandt
-                value(i_opbel) type opbel_kk
-      exporting value(e_opbel) type opbel_kk
-                value(e_blart) type blart_kk
-                value(e_budat) type budat_kk.
+    class-methods get_payment_document_single
+                    importing value(i_client) type s_mandt
+                              value(i_opbel) type opbel_kk
+                    exporting value(e_opbel) type opbel_kk
+                              value(e_blart) type blart_kk
+                              value(e_budat) type budat_kk.
 
-  class-methods check_termination
-      importing value(i_client) type s_mandt
-                value(i_vbeln)  type avnr
-                value(i_posex)  type posex_isp
-                value(i_date)   type sydatum
-      exporting value(result)   type abap_bool.
+    class-methods check_termination
+                    importing value(i_client) type s_mandt
+                              value(i_vbeln)  type avnr
+                              value(i_posex)  type posex_isp
+                              value(i_date)   type sydatum
+                    exporting value(result)   type abap_bool.
 
-  class-methods check_suspension
-      importing value(i_client) type s_mandt
-                value(i_vbeln)  type avnr
-                value(i_posex)  type posex_isp
-                value(i_date)   type sydatum
-      exporting value(result)   type abap_bool.
+    class-methods check_suspension
+                    importing value(i_client) type s_mandt
+                              value(i_vbeln)  type avnr
+                              value(i_posex)  type posex_isp
+                              value(i_date)   type sydatum
+                    exporting value(result)   type abap_bool.
 
-  class-methods check_redirection
-      importing value(i_client) type s_mandt
-                value(i_vbeln)  type avnr
-                value(i_posex)  type posex_isp
-                value(i_date)   type sydatum
-      exporting value(result)   type abap_bool.
+    class-methods check_redirection
+                    importing value(i_client) type s_mandt
+                              value(i_vbeln)  type avnr
+                              value(i_posex)  type posex_isp
+                              value(i_date)   type sydatum
+                    exporting value(result)   type abap_bool.
 
-  class-methods check_start
-      importing value(i_client) type s_mandt
-                value(i_vbeln)  type avnr
-                value(i_posex)  type posex_isp
-                value(i_date)   type sydatum
-      exporting value(result)   type int1.
+    class-methods check_start
+                    importing value(i_client) type s_mandt
+                              value(i_vbeln)  type avnr
+                              value(i_posex)  type posex_isp
+                              value(i_date)   type sydatum
+                    exporting value(result)   type int1.
 
-  class-methods check_end
-      importing value(i_client) type s_mandt
-                value(i_vbeln)  type avnr
-                value(i_posex)  type posex_isp
-                value(i_date)   type sydatum
-      exporting value(result)   type abap_bool.
+    class-methods check_end
+                    importing value(i_client) type s_mandt
+                              value(i_vbeln)  type avnr
+                              value(i_posex)  type posex_isp
+                              value(i_date)   type sydatum
+                    exporting value(result)   type abap_bool.
 
   PROTECTED SECTION.
   PRIVATE SECTION.
@@ -131,16 +131,21 @@ CLASS zcl_test_amdp_helper IMPLEMENTATION.
     -- UNTBRGRD  - Reason for Suspension 
     -- KUENDGRD  - Reason for end of delivery
     lt_term_r = 
-      select mandt,
-             vbeln,
+      select _jkap.mandt,
+             _jkap.vbeln,
              posex,
              posnr_ur,
              gueltigvon as start_date,
-             posnr 
-      from jkap
-      where mandt      = :i_client
-        and poart      = 'R'
-        and kunedgrd   = 'T01'   " Reason for end of delivery 
+             _jkap.posnr 
+      from jkap as _jkap inner join jkkuend as _term
+      on _jkap.mandt = _term.mandt and
+         _jkap.vbeln = _term.vbeln and
+         _jkap.posnr_ur = _term.posnr 
+      where _jkap.mandt     = :i_client  " Specific client
+        and poart           = 'R'        " A Rediection
+        and _jkap.kunedgrd  = 'T01'      " Reason for end of delivery
+        and xkuend_akt      = 'X'
+        and dats_days_between(gueltigbis, liefendei) <= 7  " Tight validation, will be terminated within a week
         and gueltigvon between :lv_start_date and :i_keydate;
 
     lt_term_tmp =  
@@ -158,15 +163,7 @@ CLASS zcl_test_amdp_helper IMPLEMENTATION.
            _jkap.poart in ('NP', 'KP', 'PP')
       where _term.mandt = :i_client
         and xkuend_akt  = 'X'
-        and liefendei between :lv_state_date and :i_keydate
-        and not exists ( select top 1 posnr from jkap
-                           where mandt       = _jkap.mandt
-                             and vbeln       = _jkap.vbeln
-                             and posex       = _jkap.posex
-                             and poart       = 'R'
-                             and kuendgrd    = 'T01'
-                             and gueltigvon <= _term.liefendei
-                       )                             
+        and liefendei between :lv_state_date and :i_keydate                             
       group by _term.mandt, _term.vbeln, _jkap.posex, _jkap.posnr_ur, liefendei;
 
     et_term_data = 
