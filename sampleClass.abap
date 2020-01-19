@@ -1,4 +1,4 @@
-** ABAP OO: interface, class, event, inheritance, encapsulation, etc  
+** ABAP OO: interface, class, event, encapsulation, inheritance, polymorphism, etc  
 **
 ** Purpose: Sample to create class, interface and use them
 **
@@ -12,7 +12,7 @@
 * 4. Create a sub class square to overwrite the two methods
 * 5. Create a class to receive the events and collect the rectange instanaces
 * 6. some Sample code for how to use the class and instances
-
+* 7. A friend class is created for testing
 interface if_display_area.
    methods get_area returning value(result) type i. 
 endinterface.
@@ -64,25 +64,48 @@ class square definition inheriting from rectanlge.
 endclass.
 
 class rectanlge implementaion.
-    method class_constructor. number_of_instance = 0. endmethod.
-    method get_count_of_instances. result = number_of_instance. endmethod.
+    method class_constructor. 
+      number_of_instance = 0.
+      
+      data(lo_rec) = new zcl_rectangle( length = 10 width = 2 ). 
+      data(lv_area) = lo_rec->disp_area( ).  " alias 
+    endmethod.
+    
+    method get_count_of_instances. 
+      result = number_of_instance. 
+    endmethod.
+    
     method constructor.
       me->length = length.
       me->width = width.
-      raise event rectangle_created. " publish the event to the listners
+      raise event rectangle_created. " publish the event to the listeners
 
       " class wide
-      add 1 to number_of_instance.
-      raise event increased.         " publish the class event to the listners
+      number_of_instance = number_of_instance + 1.
+      raise event increased.         " publish the class event to the listeners
     endmethod.
-    method get_length. length = me->length. endmethod.  
-    method get_width.  width = me->width.   endmethod.
-    method set_length. me->length = length. endmethod.
-    method set_width.  me->width = width.   endmethod. 
-    method iif_display_area~get_area. 
+
+    method get_length. 
+      length = me->length. 
+    endmethod.  
+    
+    method get_width.  
+      width = me->width.   
+    endmethod.
+    
+    method set_length. 
+      me->length = length. 
+    endmethod.
+    
+    method set_width.  
+      me->width = width.   
+    endmethod. 
+    
+    method if_display_area~get_area. 
       result = length * width. 
     endmethod.
-    method iif_display_size~get_size.
+    
+    method if_display_size~get_size.
       result = ( length + width ) * 2.
     endmethod.  
 endclass.
@@ -91,13 +114,21 @@ class square implementaion.
   method constructor.
     call method super->constructor( length = side width = side ). 
   endmethod.
-  method get_side. side = length. endmethod.
-  method set_side. length = width = side. endmethod.
-  method iif_display_area~get_area.
+  
+  method get_side. 
+    side = length. 
+  endmethod.
+  
+  method set_side. 
+    length = width = side. 
+  endmethod.
+  
+  method if_display_area~get_area.
     "result = super->if_display_area~get_area( ).
     result = length * length.
   endmethod.
-  method iif_display_size~get_size.
+
+  method if_display_size~get_size.
     result = length * 4.
   endmethod.
 endclass.
@@ -108,13 +139,14 @@ endclass.
 class test_rectangle definition final for testing 
   duration medium 
   risk level dangerous.
+  
   public section.
     methods checking.
 endclass.
 
 class test_rectangle implementation.
   method checking.
-    DATA(lo_rect) = new rectangle( length = 10 witdth = 20 ).
+    DATA(lo_rect) = new rectangle( length = 10 width = 20 ).
 
     cl_abap_unit_assert=>assert_equals(lo_rect->length, 10).
     cl_abap_unit_assert=>assert_equals(lo_rect->width, 20).
@@ -139,15 +171,16 @@ endclass.
 
 class collector definition.
   public section.
+    types rectangle_tab type table of ref to rectangle with empty key.
     methods constructor.
-    methods get_rectangles returning value(result) type table of ref to rectanlge.
+    methods get_rectangles returning value(result) type rectangle_tab.
 
   private section.
     " Event handler for rectangle created
     methods add_rectangle for event rectangle_created of rectangle
               importing sender.
 
-    data t_rectangle type table of ref to rectangle. 
+    data t_rectangle type rectangle_tab. 
 endclass.
 class collector implementation.  
   method constructor.
@@ -162,7 +195,7 @@ form test.
     DATA: lo_collector TYPE REF TO collector.
     " Set up the collector to listen the creation of rectangles
     "create object lo_collector.
-    lo_collector = new lo_collector( ).
+    lo_collector = new collector( ).
         
     DATA: lo_rec1 TYPE REF TO rectangle,
           lo_rec2 TYPE REF TO rectangle,
@@ -171,7 +204,7 @@ form test.
     DATA: lo_square1 TYPE REF TO square,
           lo_square2 TYPE REF TO square.
 
-    "lo_rec1 = new rectange( length = 12 width = 2 ). " collector handler called
+    "lo_rec1 = new rectangle( length = 12 width = 2 ). " collector handler called
     "lo_rec1 = NEW #( length = 12 width = 2 ).
     create object lo_rec1 exporting 
                              length = 12
@@ -182,33 +215,34 @@ form test.
     " a derived class instance to interface, abstract, supper class 
     lif_rec = lo_square1.
     data(lv_area) = lif_rec->if_display_area~get_area( ).
-    lv_area = lif_rec->disp_area( ).  " alias 
     lo_rec2 = lo_square1.  " Narrowing cast again
 
     " Widening cast: up 
     " interface, abstract, supper class to a derived class variable
     try.
       lo_square2 ?= lif_rec.        " widening cast I
-      move lo_rec2 ?to lo_square2.  " alternatively, widening cast II
-
+      "move lo_rec2 ?to lo_square2.  " alternatively, widening cast II
+      lo_square2 ?= lo_rec2.
     CATCH cx_sy_move_cast_error.
       " react on that cast error
   ENDTRY.
 
-  lif_rec = lo_rect1.
+  lif_rec = lo_rec1.
   lv_area = lif_rec->if_display_area~get_area( ).
 
-  data(lv_count) - rectangle=>get_count_of_instances( ).
+  data(lv_count) = rectangle=>get_count_of_instances( ).
   
-  loop at lo_collector.get_rectangles( ) assigning field-symbols <rect>.
-    data(lv_size) = <rect>->iif_display_size~get_size( ).
+  field-symbols <rect> TYPE REF TO rectangle.
+  loop at lo_collector->get_rectangles( ) assigning <rect>.
+    data(lv_size) = <rect>->if_display_size~get_size( ).
     data(lv_length) = <rect>->get_lenth( ).
     data(lv_width) = <rect>->get_width( ).
 
     try.
        lo_square2 ?= <rect>.
        write: / 'side:', lv_length, lv_size.
-    CATCH cx_sy_move_cast_error. 
-       write: / 'length:', lv_length, 'width:' lv_width, lv_size.
+       CATCH cx_sy_move_cast_error. 
+         write: / 'length:', lv_length, 'width:' lv_width, lv_size.
+    endtry.
   endloop.
 endform.

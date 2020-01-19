@@ -12,7 +12,8 @@
 define view ZCDS_MSDORDER_HDR 
 as select from JKAK 
 {
-    vbeln,
+    key mandt,
+    key vbeln,
     kunag, 
     erdat,
     vbtyp,
@@ -31,8 +32,9 @@ as select from JKAK
 define view ZCDS_MSDORDER_ITM 
 as select from JKAP 
 {
-    vbeln,
-    posnr,
+    key mandt,
+    key vbeln,
+    key posnr,
     posex,
     poart,
     kunwe,
@@ -53,6 +55,7 @@ as select from ZCDS_MSDORDER_HDR as _header
    inner join ZCDS_MSDORDER_ITM as _OrderItems
          on _header.vbeln = _OrderItems.vbeln  
 {
+    key mandt,
     key vbeln, 
         kunag,
         _OrderItems.posex,
@@ -70,6 +73,7 @@ as select from ZCDS_MSDORDER_HDR as _header
    association to ZCDS_MSDORDER_ITM as _OrderItems
                on _header.vbeln = _OrderItems.vbeln  
 {
+    key mandt,
     key vbeln, 
         erdat,
         kunag,
@@ -100,6 +104,7 @@ as select from ZCDS_MSDORDER_HDR as _header
    association [1..*] to ZCDS_MSDORDER_ITM as _OrderItems
                on _header.vbeln = _OrderItems.vbeln  
 {
+    key mandt,
     key vbeln, 
         kunag,
         _OrderItems.kunwe,
@@ -121,6 +126,7 @@ as select from ZCDS_MSDORDER_HDR as _header
    association [1..*] to ZCDS_MSDORDER_ITM as _OrderItems
                on $projection.vbeln = _OrderItems.vbeln  
 { 
+    key mandt,
     key vbeln,
         kunag,
         _OrderItems.kunwe,
@@ -138,6 +144,7 @@ as select from ZCDS_MSDORDER_HDR as _header
    association [1..*] to ZCDS_MSDORDER_ITM as _OrderItems
                on $projection.vbeln = _OrderItems.vbeln  
 { 
+    key mandt,
     key vbeln,
         kunag,
         _OrderItems[inner].kunwe,
@@ -156,4 +163,3 @@ as select from ZCDS_MSDORDER_HDR as _header
 --    FROM zcds_msdorder_orditm4
 --    INTO TABLE @DATA(lt_data2).
 --ENDIF.
-

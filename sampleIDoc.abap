@@ -5,6 +5,7 @@
 ** Author : Simon Li  Oct 2018
 **
 ** https://help.sap.com/viewer/8f3819b0c24149b5959ab31070b64058/7.0.37/en-US/4ab074b6aa3a1997e10000000a421937.html
+** https://help.sap.com/doc/saphelp_nw751abap/7.51.0/en-US/4a/6dda17c95261a1e10000000a421937/frameset.html
 * Processing IDocs
 * Configuring Ports
 * Defining Partners

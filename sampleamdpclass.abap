@@ -11,25 +11,25 @@ CLASS zcl_test_amdp_helper DEFINITION
 
   PUBLIC SECTION.
     types: begin of ty_termination,
-           mandt      type jkap-mandt,
-           vbeln      type jkap-vbeln,
-           posex      type jkap-posex,
-           posnr_ur   type jkap-posnr_ur,
-           start_date type jkap-gueltigvon,
-           posnr      type jkap-posnr,
-         end of ty_termination,
-         ty_ytermination_tab type standard table of ty_termination. " with non-unique key mandt vbeln posex.
+             mandt      type jkap-mandt,
+             vbeln      type jkap-vbeln,
+             posex      type jkap-posex,
+             posnr_ur   type jkap-posnr_ur,
+             start_date type jkap-gueltigvon,
+             posnr      type jkap-posnr,
+           end of ty_termination,
+           ty_termination_tab type standard table of ty_termination. " with non-unique key mandt vbeln posex.
 
-    types:  begin of ty_order_status,
-           mandt    TYPE s_mandt,
-           vbeln    TYPE avnr,       "Order
-           posex    TYPE posex_isp,  "ItemEx
-           posnr_ur TYPE apnr_ur,    "Original item 1:1 -> ItemEx
-           posnr    TYPE apnr,       "ItemInt for linkage
-           status   TYPE char1,      "Status
-           delta    TYPE char1,      "delta change flag
-         end of ty_order_status,
-         ty_order_status_tab TYPE standard table of ty_order_status.
+    types: begin of ty_order_status,
+             mandt    TYPE s_mandt,
+             vbeln    TYPE avnr,       "Order
+             posex    TYPE posex_isp,  "ItemEx
+             posnr_ur TYPE apnr_ur,    "Original item 1:1 -> ItemEx
+             posnr    TYPE apnr,       "ItemInt for linkage
+             status   TYPE char1,      "Status
+             delta    TYPE char1,      "delta change flag
+           end of ty_order_status,
+           ty_order_status_tab TYPE standard table of ty_order_status.
 
     INTERFACES if_amdp_marker_hdb. " introduce AMDP for Hana 
 
@@ -115,7 +115,9 @@ CLASS zcl_test_amdp_helper DEFINITION
                     exporting value(result)   type abap_bool.
 
   PROTECTED SECTION.
+
   PRIVATE SECTION.
+
 ENDCLASS.
 
 CLASS zcl_test_amdp_helper IMPLEMENTATION.
@@ -602,7 +604,6 @@ CLASS zcl_test_amdp_helper IMPLEMENTATION.
       et_order_status = select * from :lt_action_set
                         union all
                         select * from :lt_change_set;
-                        end if;
     else
       et_order_status = :lt_action_set; 
     end if;                                 
