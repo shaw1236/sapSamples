@@ -14,6 +14,15 @@
 // Tested with GraphiQL, postman GraphQL and curl
 'use strict';
 
+// Set up a database connection and store the connection sytring
+// in variable "DATABASEURL" of file ".env"
+// samples 
+//DATABASEURL = mysql://user:password@localhost:3306/database
+//DATABASEURL = mssql://user:password@localhost/database
+//DATABASEURL = mariadb://user:password@example.com:9821/database
+//DATABASEURL = sqlite://user:password@/home/abs/path/dbname.db
+//DATABASEURL = postgres://user:password@/home/abs/path/dbname.db
+
 //-----------------------------------------
 // Part 1 - sequelize - database table sync
 //-----------------------------------------
