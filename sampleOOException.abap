@@ -154,6 +154,9 @@ class cx_sample implementation.
                           ).
         me->code = code.
         me->msg = msg.
+        if textid is initial.
+            me->textid = me->msg.
+        endif.
     endmethod.
     method get_code.
         code = me->code.
@@ -163,27 +166,64 @@ class cx_sample implementation.
     endmethod.
 endclass.
 
+class cx_sample2 definition inheriting from CX_DYNAMIC_CHECK.
+endclass.
+
 * How to test our exception class
 class cl_test definition.
     public section.
-      class-methods: main, 
-                     process raising cx_sample.
+      class-methods: main,
+                     pre_process raising RESUMABLE(cx_sample2). 
+                     process returing value(result) type i raising cx_sample.
 endclass.
 class cl_test implementation.
+    method pre_process.
+        try.
+            "...
+            RAISE RESUMABLE EXCEPTION TYPE cx_sample2.
+            " Or DATA lo_cx_sample2 = NEW cx_sample2( ).
+            "    RAISE RESUMABLE EXCEPTION lo_cx_sample2.
+            write: / 'Demo, resumed ...'.
+            "...
+        " cleanup = catch plus raise again if resumption is not possible
+        cleanup into data(lo_cx).  " If possibly resumed, this cleanup won't be called
+           write: / lo_cx->get_text( ). 
+        endtry.
+    endmethod.
     method process.
+        result = 0.
         "...
-        raise exception type cx_sample 
-            exporting
-                code = 3034
-                msg = 'This is a test for ABAP OO Exception'.
-        "...
+        try.
+            result = 4.
+            write: / |Coming here, result = { result }|.
+            raise exception type cx_sample 
+                exporting
+                    code = 3034
+                    msg = 'This is a test for ABAP OO Exception'.
+            write: / 'Will never reach here'.
+            "...
+            cleanup. " This will be called before the exception handling is propagated
+                " clean up data and maintain the variable state
+                result = 0.
+                write: / |Coming here, result = { result }|.
+        endtry.
     endmethod.
     method main.
         try.
-            process( ).
-        catch cx_sample into data(lo_cx_sample).
-            write: / 'Code:', lo_cx_sample->get_code(),
+            pre_process( ).
+            data(lv_result) = process( ).
+          catch before unwind cx_sample2 into data(lo_cx_sample2).
+            if lo_cx_sample2->IS_RESUMABLE = abap_true.
+                resume.
+            endif.    
+          catch cx_sample into data(lo_cx_sample).
+            write: / 'Result:', lv_result,
+                     'Code:', lo_cx_sample->get_code(),
                      'Message:', lo_cx_sample->get_message(). 
+          catch cx_root into data(lo_cx_root).
+            write: / "Catch all'.
+            write: / lo_cx_root->get_text( ).
+            write: / "It won't be reached in this sample, but it is still a good practice".
         endtry.
     endmethod.
 endclass.
