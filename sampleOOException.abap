@@ -137,12 +137,12 @@ class cx_sample definition inheriting from CX_STATIC_CHECK.
     public section.
         "data code type i.
         "data msg type string.
-        methods CONSTRUCTOR importing TEXTID like TEXTID optional
+        methods: CONSTRUCTOR importing TEXTID like TEXTID optional
                                       PREVIOUS like PREVIOUS optional
                                       code type i optional 
                                       msg type string optional,
-                get_code returning value(code) type i,
-                get_message return value(msg) type string.
+                 get_code returning value(code) type i,
+                 get_message returning value(msg) type string.
     private section.
         data code type i.
         data msg type string.  
@@ -172,9 +172,10 @@ endclass.
 * How to test our exception class
 class cl_test definition.
     public section.
-      class-methods: main,
-                     pre_process raising RESUMABLE(cx_sample2). 
-                     process returing value(result) type i raising cx_sample.
+      class-methods: main, 
+                     print importing i_content type any,
+                     pre_process raising RESUMABLE(cx_sample2), 
+                     process returning value(result) type i raising cx_sample.
 endclass.
 class cl_test implementation.
     method pre_process.
@@ -183,11 +184,11 @@ class cl_test implementation.
             RAISE RESUMABLE EXCEPTION TYPE cx_sample2.
             " Or DATA lo_cx_sample2 = NEW cx_sample2( ).
             "    RAISE RESUMABLE EXCEPTION lo_cx_sample2.
-            write: / 'Demo, resumed ...'.
+            print( 'Demo, resumed ...' ).
             "...
         " cleanup = catch plus raise again if resumption is not possible
         cleanup into data(lo_cx).  " If possibly resumed, this cleanup won't be called
-           write: / lo_cx->get_text( ). 
+           print( lo_cx->get_text( ) ). 
         endtry.
     endmethod.
     method process.
@@ -195,17 +196,17 @@ class cl_test implementation.
         "...
         try.
             result = 4.
-            write: / |Coming here, result = { result }|.
+            print( |Coming here, result = { result }| ).
             raise exception type cx_sample 
                 exporting
                     code = 3034
                     msg = 'This is a test for ABAP OO Exception'.
-            write: / 'Will never reach here'.
+            print( 'Will never reach here' ).
             "...
             cleanup. " This will be called before the exception handling is propagated
                 " clean up data and maintain the variable state
                 result = 0.
-                write: / |Coming here, result = { result }|.
+                print( |Coming here, result = { result }| ).
         endtry.
     endmethod.
     method main.
@@ -217,14 +218,20 @@ class cl_test implementation.
                 resume.
             endif.    
           catch cx_sample into data(lo_cx_sample).
-            write: / 'Result:', lv_result,
-                     'Code:', lo_cx_sample->get_code(),
-                     'Message:', lo_cx_sample->get_message(). 
+            print( |Result: { lv_result }, | &&
+                   |Code: { lo_cx_sample->get_code( ) }, | &&
+                   |Message: { lo_cx_sample->get_message( ) }| ). 
           catch cx_root into data(lo_cx_root).
-            write: / "Catch all'.
-            write: / lo_cx_root->get_text( ).
-            write: / "It won't be reached in this sample, but it is still a good practice".
+            print( 'Catch all' ).
+            print( lo_cx_root->get_text( ) ).
+            print( 'It won''t be reached in this sample, but it is still a good practice.' ).
         endtry.
+    endmethod.
+    method print.
+        " In the test Cloud ABAP system ES5, we are not allowed to output the content
+        " so it is wise for us to only adjust one place here, do whatever you can or just 
+        " comment the output out.
+        write: / i_content.
     endmethod.
 endclass.
 
