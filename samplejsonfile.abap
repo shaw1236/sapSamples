@@ -86,6 +86,7 @@ CLASS LCL_JSON_FILE IMPLEMENTATION.
     DATA lv_file TYPE string.
     lv_file = i_file.
     IF lv_file CS '\'.
+      "CL_GUI_FRONTEND_SERVICES=>GUI_DOWNLOAD(  )
       CALL FUNCTION 'GUI_DOWNLOAD'
         EXPORTING
           bin_filesize = lv_strlen
@@ -171,6 +172,7 @@ CLASS LCL_JSON_FILE IMPLEMENTATION.
     "DATA lv_strlen TYPE i VALUE IS INITIAL.
 
     IF lv_file CS '\'.
+      "CALL METHOD CL_GUI_FRONTEND_SERVICES=>GUI_UPLOAD
       CALL FUNCTION 'GUI_UPLOAD'
         EXPORTING
           filename   = lv_file
