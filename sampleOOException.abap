@@ -29,9 +29,9 @@ class CX_ROOT definition Abstract.
         interfaces: if_message,IF_SERIALIZABLE_OBJECT.
         constants CX_ROOT type SOTR_CONC value '16AA9A3937A9BB56E10000000A11447B'. " char32
         data: TEXTID type SOTR_CONC,
-            PREVIOUS type ref to cx_root,
-            KERNEL_ERRID type S380ERRID,  " char30
-            IS_RESUMABLE type abap_bool.
+              PREVIOUS type ref to cx_root,
+              KERNEL_ERRID type S380ERRID,  " char30
+              IS_RESUMABLE type abap_bool.
       
         aliases: GET_LONGTEXT for IF_MESSAGE~GET_LONGTEXT,
                  GET_TEXT     for IF_MESSAGE~GET_TEXT. 
@@ -48,11 +48,11 @@ endclass.
 class cx_root implementation.
     METHOD constructor.
         IF textid IS INITIAL.
-           me->textid = cx_root .
+           me->textid = cx_root.
         ELSE.
-           me->textid = textid .
+           me->textid = textid.
         ENDIF.
-        me->previous = previous .
+        me->previous = previous.
     ENDMETHOD.
 
     METHOD if_message~get_text .
@@ -62,7 +62,7 @@ class cx_root implementation.
            RECEIVING
              result = result.
     ENDMETHOD.
-    METHOD if_message~get_longtext .
+    METHOD if_message~get_longtext.
         " RETURNING result
         CALL METHOD cl_message_helper=>get_longtext_for_message
            EXPORTING
@@ -149,9 +149,9 @@ class cx_sample definition inheriting from CX_STATIC_CHECK.
 endclass.
 class cx_sample implementation.
     method CONSTRUCTOR.
-        super-constructor( exporting textid = textid 
-                                     previous = previous 
-                         ).
+        super->constructor( exporting textid = textid 
+                                      previous = previous 
+                          ).
         me->code = code.
         me->msg = msg.
     endmethod.
