@@ -208,7 +208,10 @@ CLASS zcl_test_amdp_helper IMPLEMENTATION.
                   from dfkkop
                   where augst = '9'   -- Cleared Item only
                     and augrd in ('01', '08', '15');
-
+        if is_empty(:lt_cleaned) then
+           return;
+        end if;
+                     
        -- case 1 for cleared reason '01'
        lt_dataset1 = select
                         _augrd01.client,
@@ -614,8 +617,8 @@ CLASS zcl_test_amdp_helper IMPLEMENTATION.
                            options read-only
                            using jkap
                            ZCL_TEST_AMDP_HELPER=>GET_TERMINATION_PER_KEYDATE.
-    declare lv_count integer := 0;
-    result := ' ';   -- abap_false
+    --declare lv_count auto =  0;
+    result = ' ';   -- abap_false
 
     call
      "ZCL_TEST_AMDP_HELPER=>GET_TERMINATION_PER_KEYDATE"(
@@ -623,14 +626,8 @@ CLASS zcl_test_amdp_helper IMPLEMENTATION.
             i_keydaye    => :i_date,
             et_term_data => :lt_term_all );
    
-    select count( posnr ) into lv_count 
-      from :lt_term_all
-      where mandt      = :i_client 
-        and vbeln      = :i_vbeln
-        and posex      = :i.posex
-        and start_date = :i_date;
-    if lv_count > 0 then
-       result := 'X';   -- abap_true
+    if record_count(:lt_term_all) > 0 then
+       result = 'X';   -- abap_true
     end if;
   endmethod.
 
@@ -639,8 +636,8 @@ CLASS zcl_test_amdp_helper IMPLEMENTATION.
                            options read-only
                            using jkap
                            ZCL_TEST_AMDP_HELPER=>GET_TERMINATION_PER_KEYDATE.
-    declare lv_count integer := 0;
-    result := ' ';   -- abap_false
+    declare lv_count integer default 0;
+    result = ' ';   -- abap_false
 
     call
      "ZCL_TEST_AMDP_HELPER=>GET_TERMINATION_PER_KEYDATE"(
@@ -662,7 +659,7 @@ CLASS zcl_test_amdp_helper IMPLEMENTATION.
                      );
 
     if lv_count > 0 then
-       result := 'X';   -- abap_true
+       result = 'X';   -- abap_true
     end if;
 
   endmethod.
@@ -673,8 +670,8 @@ CLASS zcl_test_amdp_helper IMPLEMENTATION.
                            using jkap
                            ZCL_TEST_AMDP_HELPER=>GET_TERMINATION_PER_KEYDATE.
 
-    declare lv_count integer := 0;
-    result := ' ';   -- abap_false
+    declare lv_count int = 0;
+    result = ' ';   -- abap_false
 
     call
      "ZCL_TEST_AMDP_HELPER=>GET_TERMINATION_PER_KEYDATE"(
@@ -706,8 +703,8 @@ CLASS zcl_test_amdp_helper IMPLEMENTATION.
                            using jkap
                            ZCL_TEST_AMDP_HELPER=>GET_TERMINATION_PER_KEYDATE.
     -- This procedure is for start or restart
-    declare lv_posnr nvarchar( 6 ) := '0';
-    declare lv_posnr_ur nvarchar( 6 ) := '';
+    declare lv_posnr nvarchar( 6 ) = '0';
+    declare lv_posnr_ur nvarchar( 6 ) = '';
 
     call
      "ZCL_TEST_AMDP_HELPER=>GET_TERMINATION_PER_KEYDATE"(
@@ -739,11 +736,11 @@ CLASS zcl_test_amdp_helper IMPLEMENTATION.
                      );
 
     if lv_posnr != '0' and lv_posnr = lv_posnr_ur then
-        result := 1;  -- start
+        result = 1;  -- start
     elseif lv_posnr != 0 then
-        result := 2;  -- restart
+        result = 2;  -- restart
     else
-        result := 0;  -- not
+        result = 0;  -- not
     end if;
 
   endmethod.
@@ -753,7 +750,7 @@ CLASS zcl_test_amdp_helper IMPLEMENTATION.
                            options read-only
                            using jkap 
                            ZCL_TEST_AMDP_HELPER=>GET_TERMINATION_PER_KEYDATE.
-    declare lv_count integer := 0;
+    declare lv_count int auto = 0;
 
     call
      "ZCL_TEST_AMDP_HELPER=>GET_TERMINATION_PER_KEYDATE"(
@@ -788,9 +785,9 @@ CLASS zcl_test_amdp_helper IMPLEMENTATION.
                            and gueltigbis >= :i_date 
                      );
     if lv_count > 0 then
-        result := 'X';  -- abap_true
+        result = 'X';  -- abap_true
     else
-        result := ' ';  -- abap_fals
+        result = ' ';  -- abap_fals
     end if;
 
   endmethod.
@@ -799,8 +796,10 @@ CLASS zcl_test_amdp_helper IMPLEMENTATION.
                                      LANGUAGE sqlscript
                                      OPTIONS read-only
                                      using dfkkko dfkkop.
-    declare lv_count integer := 0;
-
+    -- declare lv_count integer = 0;
+    declare init_date constant date default '00000000';
+    e_opbel = null; e_blart = null; e_budat = init_date;
+    
     lt_mdfkkop = select top 1
                     mandt, augbl, augrd from dfkkop
                     where mandt = :i_client
@@ -809,9 +808,7 @@ CLASS zcl_test_amdp_helper IMPLEMENTATION.
                       and augrd in ( '01', '08', '15' );
 
     -- Check rows of the returning dataset
-    select count( augbl ) into lv_count
-      from :lt_mdfkkop;
-    if lv_count < 1 then
+    if is_empty(:lt_mdfkkop) then
        return;  -- no row found, the payment data is blank
     end if;
 
