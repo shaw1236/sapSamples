@@ -39,6 +39,8 @@ PUBLIC SECTION.
              exception_2,
              injection_1,
              parallel_1,
+             rank_1,
+             function_1,
              nested_block_if Importing value(inval) type i
                              exporting value(val) type i,
              nested_block_while exporting value(val) type i,
@@ -952,4 +954,238 @@ CLASS zcl_amdp_flow_test IMPLEMENTATION.
          select current_date into l_date from dummy;
       endmethod.
 
+      method rank_1 by database procedure
+                             for hdb
+                             language sqlscript
+                             options read-only.
+              declare ProductSales table(ProdName VARCHAR(50), Type VARCHAR(20), Sales INT);
+ 
+              INSERT INTO :ProductSales VALUES('Tee Shirt','Plain',21); 
+              INSERT INTO :ProductSales VALUES('Tee Shirt','Lettered',22); 
+              INSERT INTO :ProductSales VALUES('Tee Shirt','Team logo',30); 
+              INSERT INTO :ProductSales VALUES('Hoodie','Plain',60); 
+              INSERT INTO :ProductSales VALUES('Hoodie','Lettered',65); 
+              INSERT INTO :ProductSales VALUES('Hoodie','Team logo',80); 
+              INSERT INTO :ProductSales VALUES('Ballcap','Vintage',60);
+              INSERT INTO :ProductSales VALUES('Ballcap','Plain',8); 
+              INSERT INTO :ProductSales VALUES('Ballcap','Lettered',40); 
+              INSERT INTO :ProductSales VALUES('Ballcap','Team logo',40); 
+              lt_data = SELECT ProdName, Type, Sales, 
+                            RANK() OVER (PARTITION BY ProdName ORDER BY Sales DESC) AS Rank, 
+                            DENSE_RANK() OVER (PARTITION BY ProdName ORDER BY Sales DESC) AS dense_rank, 
+                            ROW_NUMBER() OVER (PARTITION BY ProdName ORDER BY Sales DESC) AS row_num
+                            FROM :ProductSales
+                            ORDER BY ProdName, Type;
+              begin
+                  declare tab table(COL1 DOUBLE, COL2 DOUBLE);
+                  INSERT INTO :Tab VALUES(900, 10); 
+                  INSERT INTO :Tab VALUES(400, 50); 
+                  INSERT INTO :Tab VALUES(700, 30); 
+                  INSERT INTO :Tab VALUES(200, 40);
+                  SELECT NTH_VALUE (COL1, 2 ORDER BY COL2) FROM :Tab; -- COL1 = 700                  
+                end;  
+            endmethod.
+             
+            method function_1 by database procedure
+                             for hdb
+                             language sqlscript
+                             options read-only.
+                declare l_str1, l_str2, l_str3, l_str4 varchar(30);
+                declare l_in1, l_in2 integer = 0;
+                declare l_date1, l_date2 date;
+                declare l_timestamp1, l_timestamp2 timestamp;
+                declare arrs_1, arrs_2 varchar(30) array;
+                declare l_b1, l_b2 binary(64);
+                declare l_alphanum1, l_alphanum2 alphanum(20) default '123';
+                declare l_bool1, l_bool2 boolean;
+                declare l_double1, l_double2 double;
+                declare l_vb1, l_vb2 varbinary(16);
+                 
+                select current_date, current_timestamp into l_date1, l_timestamp1 from dummy;
+                l_str1 = INITCAP('Hello SQLScript World');
+       
+                -- left, right, substring, concat, replace, length
+                l_str2 = left( l_str1, 3 );
+                l_str2 = replace(l_str1, 'o', '0');
+                l_str3 = concat( l_str1, l_str2 );
+                l_str3 = concat_naz( l_str1, l_str2 ); 
+                l_str3 = trim(l_str1);
+                l_str3 = IFNULL(:l_str1, :l_str2);
+                
+                l_str3 = trim(leading '0' from l_str1);
+                l_str3 = trim(trailing '$' from l_str1);
+                l_str3 = trim(both '#' from l_str1);
+                l_str4 = concat_naz( l_str1, null );  -- l_str4 = l_str1
+                l_str2 = right( l_str1, 4 );
+                l_str2 = substring(l_str1, 2, 4);
+                l_in1 = length(l_str1);
+                l_str2 = LPAD(:l_str1, 15, '=====');
+                l_str2 = RPAD(:l_str1, 15, '12345');
+                l_str3 = RTRIM('endabAabbabab','ab');
+                l_str3 = LTRIM('####endabAabbabab','##');
+                l_str4 = GENERATE_PASSWORD(32);  -- varchar(128)
+                
+                l_str2 = ESCAPE_DOUBLE_QUOTES(:l_str1);
+                l_str2 = ESCAPE_SINGLE_QUOTES(:l_str1);
+                l_in2 = IS_SQL_INJECTION_SAFE(:l_str2);
+                l_str3 = ISOWEEK(TO_DATE('2011-05-30', 'YYYY-MM-DD')); --2011-W22
+                 
+                l_str4 =  GREATEST('aa', 'ab', 'ba', 'bb'); -- bb
+                
+                l_vb1 = HASH_MD5(to_binary('abcd'));
+                l_vb2 = HASH_SHA256(TO_BINARY('database'));
+                l_vb1 = HEXTOBIN('608da975');
+                 
+                l_in1 = HEXTONUM('0xffff');  
+                l_in1 = greatest( 100, 200, 10, 23 );   -- 200
+                
+                 
+                -- 2014-04-01 -> 01/04/2014  
+                l_str2 = REPLACE_REGEXPR('([[:digit:]]{4})-([[:digit:]]{2})-([[:digit:]]{2})' IN '2014-04-01' 
+                                          WITH '\3/\2/\1' OCCURRENCE ALL);  
+              
+                -- ascii, coalesce
+                l_in1 = ASCII(l_str1);  -- ascii('H')
+                l_str3 = coalesce(l_str1, l_str2);
+                arrs_1[1] = 'Toronto'; arrs_1[2] = 'Chichago'; arrs_1[3] = 'Tokoyo';
+                
+                -- cast
+                l_in1 = cast('12345' as integer);
+                l_str2 = cast(l_date1 as varchar(20));
+                l_alphanum1 = cast( l_str2 as alphanum );
+                l_str2 = cast(to_decimal(1234.899, 8, 2) as varchar(10)); 
+       
+                -- abap_alphanum, abap_numc
+                l_str2 = abap_alphanum('12345', 10 );   -- 0000012345
+                l_str2 = abap_alphanum( 'x12345', 10 );   -- x12345
+                l_str2 = abap_numc( 12, 3 );  -- 012
+                l_str2 = abap_numc( 1234, 3 ); -- 234
+                
+                -- conversion
+                l_alphanum1 = to_alphanum(l_str2);
+                l_bool1 = to_boolean('trUE');
+                l_date1 = TO_DATS('2020-01-05');  -- ABAP Date string 20200105
+                l_date1 = TO_DATE('2020-01-05', 'YYYY-MM-DD');
+                l_str2 = cast(to_decimal(12345.671, 10, 2) as varchar(20));
+                l_double1 = to_double('12.33');  
+                l_in2 = to_int('10');
+                l_in2 = to_integer('1023.30');
+                l_str2 = cast(TO_FIXEDCHAR('Ant', 2) as varchar(30));
+                l_str2 = TO_VARCHAR(TO_DATE('2009/12/31'), 'YY-MM-DD');  
+                l_str2 = TO_NVARCHAR(TO_DATE('2009/12/31'), 'YY-MM-DD');  
+                arrs_2 = trim_array(:arrs_1, 1);
+                l_str2 = numtohex(:l_in1); -- integer to hex varchar string 
+                
+                
+                l_in2 = OCCURRENCES_REGEXPR('([[:digit:]])' flag 'i' IN 'a1b2'); -- 2
+                
+                  
+                -- abap_lower, abap_upper, ucase, lcase
+                l_str2 = lcase(l_str1);
+                l_str2 = ucase(l_str1);
+                l_str2 = lower(l_str1);
+                l_str2 = UPPER(l_str1); 
+                l_str2 = abap_lower(l_str1);
+                l_str2 = abap_upper(l_str1);
+                 
+                -- case
+                l_str2 = case l_str1
+                            when '1' then 'one'
+                            when '2' then 'two'
+                            else 'unknown'
+                         end;
+                l_str2 = case when l_in1 > 0 then 'Positive'
+                              when l_in1 = 0 then 'Zero' 
+                              when l_in1 < 0 then 'Negative'
+                              else 'nunknown'
+                          end;             
+                
+                -- math
+                l_in2 = mod(:l_in1, 2);
+                l_in2 = sign(:l_in1);
+                l_in2 = power(10, 2);
+                l_in2 = round(10.20, 1, ROUND_HALF_DOWN);
+                l_double2 = exp(1.0);
+                l_in2 = ceil(:l_double1);
+                l_in2 = floor(:l_double1);
+                
+                l_vb1 = NEWUID();  -- UID, SYSUUID
+                
+                l_in2 = UMINUS(765); -- -765 
+                l_in2 = abs(:l_in2);
+                l_in2 = UNICODE('#');
+                l_str3 = nchar(65);
+                
+                l_double1 = NDIV0(100, 10); -- return 10.00
+                l_in1 = NDIV0(100, 0); -- return 0
+                select ndiv0(1, 0) as zero into l_str3 from dummy;   
+                
+                -- Returns a pseudo-random DOUBLE value in the range of 0 to less than 1.0. 
+                l_double1 = rand();
+                l_double1 = RAND_SECURE();
+                 
+                   
+                -- to_date, add_days, add_months, add_years
+                l_timestamp1 = now( );
+                
+                l_date1 = TO_DATE ('2020-01-05', 'YYYY-MM-DD');
+                l_date2 = ADD_DAYS(:l_date1, 10);
+                l_date2 = add_months(:l_date1, 2);
+                l_date2 = add_months_last(:l_date1, 2);
+                l_date2 = add_months_last(TO_DATE('2009-02-28', 'YYYY-MM-DD'), 1); -- 03/01/2009
+                l_timestamp2 = add_seconds(:l_timestamp1, 60); 
+                -- factory calendar table SAP<SID>.TFACS
+                l_date2 = ADD_WORKDAYS('CA', '2014-01-09', 1, 'FCTEST'); -- FCTEST.TFACS
+                l_in2 = WORKDAYS_BETWEEN('CA', '2014-01-09', '2014-01-10' , 'FCTEST'); 
+             
+                l_str3 = dayname(:l_date1);
+                l_str3 = monthname(:l_date1);
+                
+                l_in1 = dayofmonth(:l_date1);
+                l_in1 = dayofyear(:l_date1);
+                
+                l_in1 = year(:l_date1);
+                l_in1 = month(:l_date1);
+                --l_in1 = day(:l_date1);
+                l_str2 = quarter(:l_date1);
+                l_in1 = hour(:l_date1);
+                l_in1 = minute(:l_date1);
+                l_in1 = second(:l_date1);
+                  
+                l_date2 = add_years(:l_date1, 2); 
+                l_in1 = years_between(:l_date1, :l_date2);
+                l_in1 = months_between(:l_date1, :l_date2);
+                l_in1 = days_between(:l_date1, :l_date2);
+                l_in1 = seconds_between(:l_date1, :l_date2);
+                l_double1 = NANO100_BETWEEN(:l_date1, :l_date2);
+                
+                -- the last day of the month 
+                l_date2 = last_day(:l_date1);
+                -- Next day
+                l_date2 = NEXT_DAY(:l_date1); 
+                
+                l_date2 = nullif( :l_date1, :l_date2);
+                -- EXTRACT( {YEAR | MONTH | DAY | HOUR | MINUTE | SECOND} FROM <date> )
+                l_in2 = extract(year from :l_date1);
+                
+                begin
+                  declare l_TIMESTAMP TIMESTAMP; 
+                  declare l_seconddate seconddate;
+                  declare l_time1 time;
+                  l_seconddate = TO_SECONDDATE ('2010-01-11 13:30:00', 'YYYY-MM-DD HH24:MI:SS'); 
+                  l_time1 = TO_TIME ('08:30 AM', 'HH:MI AM');
+                  l_TIMESTAMP1 = TO_TIMESTAMP ('2010-01-11 13:30:00', 'YYYY-MM-DD HH24:MI:SS');
+                  l_TIMESTAMP1 = UTCTOLOCAL(:l_TIMESTAMP1);
+                end;
+                
+                -- week, Weeks start Monday and end Sunday
+                l_in1 = week(l_date1);
+                
+                -- weekday representing Monday(0) through to Sunday(6).
+                l_in1 = WEEKDAY(l_date1);
+                
+                -- binary
+                l_b1 = to_binary( 'This' );
+                             
+        endmethod.
 ENDCLASS.
