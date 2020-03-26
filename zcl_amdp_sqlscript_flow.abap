@@ -2,7 +2,7 @@
 **
 ** Purpose: Samples for SQL Script used an AMDP class
 **
-** Author : Simon Li  Jul 2019
+** Author : Simon Li  Jan 2019
 **
 ** Lots of redundancy just shows how to write sql script in programming 
 ** condition(if-then-else), loop(loop, for-do, while-do), cursor(implicit or explicit)
@@ -10,7 +10,7 @@
 **
 ** The syntax has been checked in ADT with some running result
 ** With this, you should gain good confidence in coding AMDP class and HANA code push-down 
-CLASS zcl_amdp_sqlscript_flow_collection DEFINITION
+CLASS zcl_amdp_sqlscript_flow DEFINITION
 PUBLIC
 FINAL
 CREATE PUBLIC .
@@ -58,7 +58,7 @@ PROTECTED SECTION.
 PRIVATE SECTION.
 ENDCLASS.
 
-CLASS zcl_amdp_flow_test IMPLEMENTATION.
+CLASS zcl_amdp_sqlscript_flow IMPLEMENTATION.
   method if_oo_adt_classrun~main.
         try.
            out->write( 'Start' ).
