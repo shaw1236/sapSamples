@@ -26,6 +26,9 @@ form test1 using value(request) type string
 
   response = '[]'.  " Default to an empty array
   
+  " {"sap_bp": "test1", "idtype": 2} to {sap_bp: "test1", idtype: 2} as cl_trex_json_deserializer requires
+  REPLACE ALL OCCURRENCES OF REGEX '"(\w+)":' IN lt_res_line WITH '$1:'.
+    
   "DATA lo_deserializer TYPE REF TO cl_trex_json_deserializer .
   "CREATE OBJECT lo_deserializer.
   DATA(lo_deserializer) = new cl_trex_json_deserializer( ).

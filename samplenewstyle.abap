@@ -1,4 +1,4 @@
-** ABAP New PRogram Style for Open SQL 
+** ABAP New Program Style for Open SQL 
 **
 ** Purpose: Sample to some new style coding
 **

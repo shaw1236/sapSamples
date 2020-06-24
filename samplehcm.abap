@@ -30,7 +30,7 @@ GET PERAS.
                       p0006 to gt_data.
   append gt_data.
   
-start-of-selection.
+end-of-selection.
   perform alv_show.
 
 form alv_show.
